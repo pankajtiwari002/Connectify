@@ -1,9 +1,12 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/constants.dart';
 import 'package:instagram_clone/screens/Profile_screen.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
+
+import 'open_image.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key});
@@ -31,6 +34,7 @@ class _SearchScreenState extends State<SearchScreen> {
         leading: IconButton(
             onPressed: () {
               setState(() {
+                searchController.text = "";
                 isShowUser = false;
               });
             },
@@ -55,7 +59,8 @@ class _SearchScreenState extends State<SearchScreen> {
                       isGreaterThanOrEqualTo: searchController.text)
                   .get(),
               builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.active || snapshot.connectionState == ConnectionState.done) {
+                if (snapshot.connectionState == ConnectionState.active ||
+                    snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasData) {
                     return ListView.builder(
                         itemCount: snapshot.data!.docs.length,
@@ -68,10 +73,17 @@ class _SearchScreenState extends State<SearchScreen> {
                                     ProfileScreen(uid: snap[index]['uid']),
                               ),
                             ),
-                            leading: CircleAvatar(
-                              backgroundImage:
-                                  NetworkImage(snap[index]['photoUrl']),
-                              radius: 18,
+                            leading: CachedNetworkImage(
+                              imageUrl: snap[index]['photoUrl'],
+                              imageBuilder: ((context, imageProvider) =>
+                                  CircleAvatar(
+                                    backgroundImage: imageProvider,
+                                    radius: 18,
+                                  )),
+                              placeholder: (context, url) => Container(),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                              fit: BoxFit.cover,
                             ),
                             title: Text(
                               snap[index]['username'],
@@ -90,15 +102,14 @@ class _SearchScreenState extends State<SearchScreen> {
                   return const Center(
                     child: CircularProgressIndicator(),
                   );
-                } else if(snapshot.hasError) {
+                } else if (snapshot.hasError) {
                   return const Center(
                     child: Text(
                       'Error occurs',
                       style: TextStyle(color: Colors.red),
                     ),
                   );
-                }
-                else{
+                } else {
                   return const Center(
                     child: Text(
                       'Error occurs in firebase',
@@ -112,45 +123,64 @@ class _SearchScreenState extends State<SearchScreen> {
               future: firestore.collection('posts').get(),
               builder: ((context,
                   AsyncSnapshot<QuerySnapshot<Map<String, dynamic>>> snapshot) {
-                if(snapshot.connectionState == ConnectionState.active || snapshot.connectionState == ConnectionState.done){
-                  if(snapshot.hasData){
+                if (snapshot.connectionState == ConnectionState.active ||
+                    snapshot.connectionState == ConnectionState.done) {
+                  if (snapshot.hasData) {
                     return MasonryGridView.count(
-                  crossAxisCount: 3,
-                  itemCount: snapshot.data!.docs.length,
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
-                  itemBuilder: (context, index) {
-                    return Image.network(snapshot.data!.docs[index]['posturl']);
-                  },
-                );
-                  }
-                  else{
+                      crossAxisCount: 3,
+                      itemCount: snapshot.data!.docs
+                          .length, // snapshot.data!.docs[index]['posturl']
+                      mainAxisSpacing: 8,
+                      crossAxisSpacing: 8,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => OpenImage(
+                                    imageUrl: snapshot.data!.docs[index]['posturl'])));
+                          },
+                          child: Hero(
+                            tag: snapshot.data!.docs[index]['posturl']+'search',
+                            child: CachedNetworkImage(
+                              imageUrl: snapshot.data!.docs[index]['posturl'],
+                              placeholder: (context, url) => Container(),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
+                        );
+                      },
+                    );
+                  } else {
                     return const Center(
-                    child: CircularProgressIndicator(),
-                  );
+                      child: CircularProgressIndicator(),
+                    );
                   }
-                }
-               else if(snapshot.connectionState == ConnectionState.waiting){
-                return const Center(
+                } else if (snapshot.connectionState ==
+                    ConnectionState.waiting) {
+                  return const Center(
                     child: CircularProgressIndicator(),
                   );
-               }
-               else if(snapshot.hasError){
-                return const Center(
-                    child: Text('Error occurs',style: TextStyle(color: Colors.red),),
+                } else if (snapshot.hasError) {
+                  return const Center(
+                    child: Text(
+                      'Error occurs',
+                      style: TextStyle(color: Colors.red),
+                    ),
                   );
-               }
-               else{
-                return MasonryGridView.count(
-                  crossAxisCount: 3,
-                  itemCount: snapshot.data!.docs.length,
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8,
-                  itemBuilder: (context, index) {
-                    return Image.network(snapshot.data!.docs[index]['posturl']);
-                  },
-                );
-               }
+                } else {
+                  return MasonryGridView.count(
+                    crossAxisCount: 3,
+                    itemCount: snapshot.data!.docs.length,
+                    mainAxisSpacing: 8,
+                    crossAxisSpacing: 8,
+                    itemBuilder: (context, index) {
+                      return Image.network(
+                          snapshot.data!.docs[index]['posturl']);
+                    },
+                  );
+                }
               }),
             ),
     );

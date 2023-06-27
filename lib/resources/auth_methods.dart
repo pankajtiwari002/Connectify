@@ -15,6 +15,7 @@ class AuthMethod {
 
     return model.User.fromSnap(snap);
   }
+  // * Sign up a user with an email address and password using Firebase
   Future<String> signUpUser({
     required String email,
     required String password,
@@ -58,6 +59,7 @@ class AuthMethod {
     return res;
   }
 
+  // * Sign in a user with a password using Firebase
   Future<String> loginUser({
     required String email,
     required String password,
@@ -89,7 +91,7 @@ class AuthMethod {
     }
     return res;
   }
-
+  // * Sign out a user using Firebase
   Future<void> signOut() async{
     await firebaseAuth.signOut();
   }

@@ -6,8 +6,10 @@ import 'package:instagram_clone/constants.dart';
 import 'package:instagram_clone/screens/login_screen.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/utils.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../widget/follow_button.dart';
+import 'open_image.dart';
 
 class ProfileScreen extends StatefulWidget {
   final String uid;
@@ -61,17 +63,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   @override
   Widget build(BuildContext context) {
     return isLoading
-          ? const Scaffold(
+        ? const Scaffold(
             body: Center(
-                child: CircularProgressIndicator(),
-              ),
+              child: CircularProgressIndicator(),
+            ),
           )
-          : Scaffold(
-      appBar: AppBar(
-        backgroundColor: mobileBackgroundColor,
-        title: Text(userData['username']),
-      ),
-      body: ListView(
+        : Scaffold(
+            appBar: AppBar(
+              backgroundColor: mobileBackgroundColor,
+              title: Text(userData['username']),
+            ),
+            body: ListView(
               children: [
                 Padding(
                   padding: const EdgeInsets.all(8.0),
@@ -79,9 +81,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     children: [
                       Row(
                         children: [
-                          CircleAvatar(
-                            backgroundImage: NetworkImage(userData['photoUrl']),
-                            radius: 40,
+                          CachedNetworkImage(
+                            imageUrl: userData['photoUrl'],
+                            imageBuilder: ((context, imageProvider) =>
+                                CircleAvatar(
+                                  backgroundImage: imageProvider,
+                                  radius: 50,
+                                )),
+                            placeholder: (context, url) => Container(),
+                            errorWidget: (context, url, error) =>
+                                const Icon(Icons.error),
+                            fit: BoxFit.cover,
                           ),
                           Expanded(
                             child: Column(
@@ -107,9 +117,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             text: 'signOut',
                                             textColor: primaryColor,
                                             borderColor: Colors.grey,
-                                            function: () async{
+                                            function: () async {
                                               await authMethod.signOut();
-                                              Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (context)=>const LoginScreen()));
+                                              Navigator.of(context).pushReplacement(
+                                                  MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          const LoginScreen()));
                                             },
                                           )
                                         : isFollowing
@@ -203,7 +216,20 @@ class _ProfileScreenState extends State<ProfileScreen> {
                         DocumentSnapshot snap = snapshot.data!.docs[index];
 
                         return Container(
-                          child: Image.network(snap['posturl']),
+                          child: GestureDetector(
+                            onTap: (){
+                              Navigator.of(context).push(MaterialPageRoute(
+                                builder: (context) => OpenImage(
+                                    imageUrl: snap['posturl'])));
+                            },
+                            child: CachedNetworkImage(
+                              imageUrl: snap['posturl'],
+                              placeholder: (context, url) => Container(),
+                              errorWidget: (context, url, error) =>
+                                  const Icon(Icons.error),
+                              fit: BoxFit.cover,
+                            ),
+                          ),
                         );
                       },
                     );
@@ -211,7 +237,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 )
               ],
             ),
-    );
+          );
   }
 }
 

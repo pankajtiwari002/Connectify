@@ -46,7 +46,7 @@ class _CommentCardState extends State<CommentCard> {
                   Padding(
                     padding: EdgeInsets.only(top: 4),
                     child: Text(DateFormat.yMMMd()
-                        .format(widget.date.toDate()),style: TextStyle(fontSize: 12,fontWeight: FontWeight.w400),),
+                        .format(widget.date.toDate()),style: const TextStyle(fontSize: 12,fontWeight: FontWeight.w400),),
                   )
                 ],
               ),
