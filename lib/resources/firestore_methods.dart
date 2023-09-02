@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:instagram_clone/models/user.dart';
+import 'package:instagram_clone/utils/global_variable.dart';
 import 'package:uuid/uuid.dart';
 
 import '../constants.dart';
@@ -11,6 +12,19 @@ import '../models/post.dart';
 import '../models/story.dart';
 
 class FirestoreMethods {
+  // * Check if document exists in a collection
+  Future<bool> checkIfDocExists(String collectionName, String docId) async {
+    try {
+      // Get reference to Firestore collection
+      var collectionRef = firestore.collection(collectionName);
+
+      var doc = await collectionRef.doc(docId).get();
+      return doc.exists;
+    } catch (e) {
+      throw e;
+    }
+  }
+
   //* upload post to Firestore and store image in storage
   Future<String> uploadPost(String description, String uid, Uint8List file,
       String profileImage, String username) async {
@@ -187,15 +201,24 @@ class FirestoreMethods {
     try {
       String imageurl =
           await storageMethods.uploadImageToStorage('story', image, true);
+      String storyId = Uuid().v1();
       Story story = Story(
           type: type,
-          profileUrl: user.photoUrl,
-          uid: user.uid,
-          url: imageurl,
-          username: user.username);
-      await firestore.collection('user').doc(user.uid).update({
-        'story': FieldValue.arrayUnion([story.toJson()]),
-      });
+          storyUrl: imageurl,
+          storyId: storyId);
+      if(await checkIfDocExists('story', user.uid)){
+          await firestore.collection('story').doc(user.uid).update({
+            'stories': FieldValue.arrayUnion([story.toJson()]),
+          });
+      }
+      else{
+        await firestore.collection('story').doc(user.uid).set({
+          'username': user.username,
+          'uid': user.uid,
+          'profileUrl': user.photoUrl,
+          'stories': [story.toJson()],
+        });
+      }
     } catch (e) {
       print(e.toString());
     }

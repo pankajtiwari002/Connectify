@@ -2,7 +2,6 @@ import 'dart:developer';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
-import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:instagram_clone/resources/firestore_methods.dart';
 import 'package:instagram_clone/utils/colors.dart';
@@ -13,14 +12,14 @@ import '../models/user.dart';
 import '../providers/user_provider.dart';
 
 class AddPostScreen extends StatefulWidget {
-  const AddPostScreen({super.key});
+  Uint8List file;
+  AddPostScreen({required this.file});
 
   @override
   State<AddPostScreen> createState() => _AddPostScreenState();
 }
 
 class _AddPostScreenState extends State<AddPostScreen> {
-  Uint8List? _file;
   final TextEditingController _descriptionController = TextEditingController();
   bool _isloading = false;
 
@@ -29,7 +28,7 @@ class _AddPostScreenState extends State<AddPostScreen> {
       _isloading = true;
     });
     try{
-      String res = await FirestoreMethods().uploadPost(_descriptionController.text, uid, _file!, profileImage, username);
+      String res = await FirestoreMethods().uploadPost(_descriptionController.text, uid, widget.file, profileImage, username);
       if(res=="success"){
         showSnackBar("posted!", context);
         clearImage();
@@ -47,70 +46,8 @@ class _AddPostScreenState extends State<AddPostScreen> {
 
   void clearImage(){
     setState(() {
-      _file=null;
+      Navigator.pop(context);
     });
-  }
-
-  selectImage(BuildContext context) {
-    return showDialog(
-        context: context,
-        builder: (context) {
-          return SimpleDialog(
-            title: Text('Create a post'),
-            children: [
-              SimpleDialogOption(
-                onPressed: () async{
-                  Navigator.of(context).pop();
-                  Uint8List file = await pickImage(ImageSource.camera);
-                  setState(() {
-                    _file = file;
-                  });
-                },
-                padding: EdgeInsets.all(20),
-                child: Row(
-                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Icon(Icons.camera_alt),
-                    SizedBox(width: 10,),
-                    Text('Take a photo'),
-                  ],
-                ),
-              ),
-              SimpleDialogOption(
-                onPressed: () async{
-                  Navigator.of(context).pop();
-                  Uint8List file = await pickImage(ImageSource.gallery);
-                  setState(() {
-                    _file = file;
-                  });
-                },
-                padding: EdgeInsets.all(20),
-                child: Row(
-                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Icon(Icons.photo),
-                    SizedBox(width: 10,),
-                    Text('choose from gallery'),
-                  ],
-                ),
-              ),
-              SimpleDialogOption(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                padding: EdgeInsets.all(20),
-                child: Row(
-                  // mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: const [
-                    Icon(Icons.cancel),
-                    SizedBox(width: 10,),
-                    Text('cancel'),
-                  ],
-                ),
-              ),
-            ],
-          );
-        });
   }
 
   @override
@@ -123,21 +60,24 @@ class _AddPostScreenState extends State<AddPostScreen> {
   Widget build(BuildContext context) {
     final User user = Provider.of<UserProvider>(context).getUser;
     log(user.photoUrl);
-    return _file == null
-        ?  Center(
-            child: IconButton(
-              onPressed: () => selectImage(context),
-              icon: const Icon(Icons.upload),
-            ),
-          )
-        : Scaffold(
+    return Scaffold(
             appBar: AppBar(
               backgroundColor: mobileBackgroundColor,
               leading: IconButton(
                 icon: Icon(Icons.arrow_back),
                 onPressed: clearImage,
               ),
-              title: const Text('Post to'),
+              title: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircleAvatar(
+                    backgroundImage: NetworkImage(user.photoUrl),
+                    radius: 20,
+                  ),
+                  SizedBox(width: 10,),
+                  Text(user.username),
+                ],
+              ),
               actions: [
                 TextButton(
                     onPressed: (){
@@ -153,48 +93,30 @@ class _AddPostScreenState extends State<AddPostScreen> {
                     )),
               ],
             ),
-            body: Column(
-              children: [
-                _isloading ? const LinearProgressIndicator() : Container(),
-                SizedBox(height: 10,),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceAround,
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CircleAvatar(
-                      backgroundImage: NetworkImage(
-                          user.photoUrl),
+            body: SingleChildScrollView(
+              child: Column(
+                children: [
+                  _isloading ? const LinearProgressIndicator() : Container(),
+                  SizedBox(height: 10,),
+                  TextField(
+                    decoration: InputDecoration(
+                      hintText: 'Write a caption ...',
+                      contentPadding: EdgeInsets.only(left: 15,right: 15),
+                      border: InputBorder.none,
                     ),
-                    SizedBox(
-                      width: MediaQuery.of(context).size.width * 0.45,
-                      child: TextField(
-                        controller: _descriptionController,
-                        decoration: const InputDecoration(
-                          hintText: 'Write a caption...',
-                          border: InputBorder.none,
-                        ),
-                        maxLines: 8,
-                      ),
+                    maxLines: 20,
+                    minLines: 1,
+                  ),
+                  const SizedBox(height: 20,),
+                  Container(
+                    height: 170,
+                    decoration: BoxDecoration(
+                      image: DecorationImage(image: MemoryImage(widget.file)),
+                      borderRadius: BorderRadius.circular(20),
                     ),
-                    SizedBox(
-                      height: 45,
-                      width: 45,
-                      child: AspectRatio(
-                        aspectRatio: 487 / 451,
-                        child: Container(
-                          decoration: BoxDecoration(
-                              image: DecorationImage(
-                            image: MemoryImage(_file!),
-                            fit: BoxFit.fill,
-                            alignment: FractionalOffset.topCenter,
-                          )),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const Divider(),
-              ],
+                  ),
+                ],
+              ),
             ),
           );
   }

@@ -1,23 +1,18 @@
 class Story{
-  final String uid;
-  final String username;
-  final String profileUrl;
+  final String storyId;
   final String type;
-  final String url;
+  final String storyUrl;
 
   Story({
     required this.type,
-    required this.profileUrl,
-    required this.uid,
-    required this.url,
-    required this.username
+    required this.storyUrl,
+    required this.storyId
   });
 
   Map<String,dynamic> toJson() => {
-    'uid' : uid,
-    'username': username,
-    'profileUrl': profileUrl,
+    'storyId': storyId,
     'type': type,
-    'url': url
+    'storyUrl': storyUrl,
+    // 'date': DateTime.now()
   };
 }

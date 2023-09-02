@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
@@ -62,10 +64,12 @@ class _SearchScreenState extends State<SearchScreen> {
                 if (snapshot.connectionState == ConnectionState.active ||
                     snapshot.connectionState == ConnectionState.done) {
                   if (snapshot.hasData) {
+                    log(snapshot.data!.docs.length.toString());
                     return ListView.builder(
                         itemCount: snapshot.data!.docs.length,
                         itemBuilder: (context, index) {
                           final snap = snapshot.data!.docs;
+                          log(snap[index]['photoUrl'].toString());
                           return ListTile(
                             onTap: () => Navigator.of(context).push(
                               MaterialPageRoute(
@@ -73,17 +77,9 @@ class _SearchScreenState extends State<SearchScreen> {
                                     ProfileScreen(uid: snap[index]['uid']),
                               ),
                             ),
-                            leading: CachedNetworkImage(
-                              imageUrl: snap[index]['photoUrl'],
-                              imageBuilder: ((context, imageProvider) =>
-                                  CircleAvatar(
-                                    backgroundImage: imageProvider,
-                                    radius: 18,
-                                  )),
-                              placeholder: (context, url) => Container(),
-                              errorWidget: (context, url, error) =>
-                                  const Icon(Icons.error),
-                              fit: BoxFit.cover,
+                            leading: CircleAvatar(
+                              backgroundImage: CachedNetworkImageProvider(snap[index]['photoUrl']),
+                              radius: 18,
                             ),
                             title: Text(
                               snap[index]['username'],

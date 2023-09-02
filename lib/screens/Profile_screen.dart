@@ -119,10 +119,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             borderColor: Colors.grey,
                                             function: () async {
                                               await authMethod.signOut();
-                                              Navigator.of(context).pushReplacement(
-                                                  MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          const LoginScreen()));
+                                              // Navigator.of(context).pushReplacement(
+                                              //     MaterialPageRoute(
+                                              //         builder: (context) =>
+                                              //             const LoginScreen()));
                                             },
                                           )
                                         : isFollowing
