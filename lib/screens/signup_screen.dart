@@ -38,6 +38,10 @@ class _SignUpScreenState extends State<SignUpScreen> {
     setState(() {
       _isloading = true;
     });
+    if(_passwordController.text.length > 6){
+      showSnackBar('Password should be of atleast 6 characters', context);
+      return;
+    }
     String res = await AuthMethod().signUpUser(
         email: _emailController.text,
         password: _passwordController.text,

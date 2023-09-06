@@ -6,6 +6,7 @@ import '../screens/add_post_screen.dart';
 import '../screens/feed_screen.dart';
 
 class GlobalVariable{
+    static String? fCMToken = '';
     int webScreenSize = 600;
     static String s = '';
     late List<Widget> homeScreenItem = [

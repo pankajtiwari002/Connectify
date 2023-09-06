@@ -3,11 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/src/widgets/framework.dart';
 import 'package:flutter/src/widgets/placeholder.dart';
 import 'package:instagram_clone/constants.dart';
+import 'package:instagram_clone/providers/user_provider.dart';
 import 'package:instagram_clone/screens/login_screen.dart';
 import 'package:instagram_clone/utils/colors.dart';
 import 'package:instagram_clone/utils/utils.dart';
 import 'package:cached_network_image/cached_network_image.dart';
+import 'package:provider/provider.dart';
 
+import '../models/user.dart';
 import '../widget/follow_button.dart';
 import 'open_image.dart';
 
@@ -118,7 +121,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                                             textColor: primaryColor,
                                             borderColor: Colors.grey,
                                             function: () async {
-                                              await authMethod.signOut();
+                                              User user = Provider.of<UserProvider>(context,listen: false).getUser;
+                                              await authMethod.signOut(user);
                                               // Navigator.of(context).pushReplacement(
                                               //     MaterialPageRoute(
                                               //         builder: (context) =>

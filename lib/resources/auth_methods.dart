@@ -4,6 +4,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:instagram_clone/models/user.dart' as model;
+import 'package:instagram_clone/utils/global_variable.dart';
 
 import '../constants.dart';
 
@@ -49,7 +50,8 @@ class AuthMethod {
             photoUrl: photoUrl
         );
         // add user detail to firestore
-        firestore.collection('user').doc(cred.user!.uid).set(user.toJson());
+        String token = GlobalVariable.fCMToken!;
+        firestore.collection('user').doc(cred.user!.uid).set(user.toJson(token));
         res = "success";
       }
     } catch (e) {
@@ -73,6 +75,10 @@ class AuthMethod {
             email: email, password: password);
         print("uid:  " + cred.user!.uid);
         res = "success";
+        String token = GlobalVariable.fCMToken!;
+        firestore.collection('user').doc(cred.user!.uid).update({
+          'fCMToken': FieldValue.arrayUnion([token])
+        });
       } else {
         res = "please enter all the field";
       }
@@ -92,7 +98,12 @@ class AuthMethod {
     return res;
   }
   // * Sign out a user using Firebase
-  Future<void> signOut() async{
+  Future<void> signOut(model.User user) async{
     await firebaseAuth.signOut();
+
+    String token = GlobalVariable.fCMToken!;
+        firestore.collection('user').doc(user.uid).update({
+          'fCMToken': FieldValue.arrayRemove([token])
+        });
   }
 }

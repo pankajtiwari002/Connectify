@@ -166,6 +166,10 @@ class FirestoreMethods {
       String imageUrl, String text, String uid, String senderId) async {
     try {
       log(1);
+      final snap = await firestore.collection('user').doc(uid).get();
+      List<dynamic> fCMTokenList = snap.data()!['fCMToken'];
+      print(fCMTokenList);
+      String username = snap.data()!['username'];
       Chat chatOwner = Chat(
           text: text, date: DateTime.now(), owner: true, imageUrl: imageUrl);
       await firestore
@@ -188,6 +192,9 @@ class FirestoreMethods {
             .update({
           'messages': FieldValue.arrayUnion([chatReceiver.toJson()]),
         });
+      }
+      for(int i=0;i<fCMTokenList.length;i++){
+        firebaseMessagingMethods.sendNotificationToUser(username, text, fCMTokenList[i].toString());
       }
       log(3);
     } catch (e) {

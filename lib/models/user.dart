@@ -19,14 +19,15 @@ class User {
     required this.photoUrl,
   });
 
-  Map<String, dynamic> toJson() => {
+  Map<String, dynamic> toJson(String token) => {
         'username': username,
         'uid': uid,
         'email': email,
         'bio': bio,
         'follwers': follwers,
         'following': following,
-        'photoUrl': photoUrl
+        'photoUrl': photoUrl,
+        'fCMToken':[token,]
       };
 
   static User fromSnap(DocumentSnapshot snap) {

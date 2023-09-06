@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -19,6 +20,7 @@ import 'package:instagram_clone/widget/story_card.dart';
 import 'package:provider/provider.dart';
 import '../models/story.dart';
 import '../models/user.dart';
+import '../notificationservice/local_notification_service.dart';
 import '../widget/post_card.dart';
 
 class FeedScreen extends StatefulWidget {
@@ -47,6 +49,9 @@ class _FeedScreenState extends State<FeedScreen> {
       });
     }
     super.initState();
+
+     
+    
   }
 
   @override
