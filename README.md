@@ -79,9 +79,8 @@ This project is licensed under the MIT License - see the [LICENSE.md](LICENSE.md
 
 ## Connect with Us
 
-- Website: [Your Website URL](https://www.yourwebsite.com)
-- LinkedIn: [Your LinkedIn Profile](https://www.linkedin.com/in/your-profile)
-- Email: your@email.com
+- LinkedIn: [Pankaj Tiwari](https://www.linkedin.com/in/pankaj-tiwari-239782225/)
+- Email: pankajtiwari6761@email.com
 
 We look forward to your contributions and feedback!
 
