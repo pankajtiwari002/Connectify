@@ -94,8 +94,6 @@ class _ChatScreenState extends State<ChatScreen> {
                                   }
                                   Navigator.of(context).push(MaterialPageRoute(
                                       builder: (context) => MessageScreen(
-                                          profileUrl: snap[index]['photoUrl'],
-                                          name: snap[index]['username'],
                                           uid: snap[index]['uid'])));
                                 },
                                 leading: CachedNetworkImage(

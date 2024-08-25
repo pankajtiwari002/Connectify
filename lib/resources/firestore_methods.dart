@@ -10,8 +10,15 @@ import '../constants.dart';
 import '../models/chat.dart';
 import '../models/post.dart';
 import '../models/story.dart';
+import '../models/user.dart' as model;
 
 class FirestoreMethods {
+  Future<model.User> getUserDetailsUsingUid(String uid) async {
+    DocumentSnapshot snap = await firestore.collection('user').doc(uid).get();
+
+    return model.User.fromSnap(snap);
+  }
+
   // * Check if document exists in a collection
   Future<bool> checkIfDocExists(String collectionName, String docId) async {
     try {
@@ -68,23 +75,45 @@ class FirestoreMethods {
   }
 
   //* post a comment on a post and use subcollection to store
-  Future<void> postComment(String postId, String text, String uid, String name,
-      String profilePic) async {
+  Future<void> postComment(String postId, String text, String uid) async {
     try {
       if (text.isNotEmpty) {
         String commentId = Uuid().v1();
-        await firestore
-            .collection('posts')
-            .doc(postId)
-            .collection('comments')
-            .doc(commentId)
-            .set({
-          'profilePic': profilePic,
-          'name': name,
+        await firestore.collection('comments').doc(commentId).set({
           'uid': uid,
           'text': text,
           'commentId': commentId,
           'datePublished': DateTime.now(),
+          'likes': [],
+          'postId': postId
+        });
+      } else {
+        print("text is empty");
+      }
+    } catch (e) {
+      print(e.toString());
+    }
+  }
+
+  //* post a comment on a post and use subcollection to store
+  Future<void> postReply(
+      String postId, String text, String uid, String replyId) async {
+    try {
+      if (text.isNotEmpty) {
+        String commentId = Uuid().v1();
+        final res = await firestore.collection('comments').doc(commentId).set({
+          'uid': uid,
+          'text': text,
+          'commentId': commentId,
+          'datePublished': DateTime.now(),
+          'likes': [],
+          'replies': [],
+          'postId': postId,
+          'replyId': replyId,
+        });
+
+        await firestore.collection('comments').doc(replyId).update({
+          'replies': FieldValue.arrayUnion([commentId])
         });
       } else {
         print("text is empty");
@@ -193,8 +222,9 @@ class FirestoreMethods {
           'messages': FieldValue.arrayUnion([chatReceiver.toJson()]),
         });
       }
-      for(int i=0;i<fCMTokenList.length;i++){
-        firebaseMessagingMethods.sendNotificationToUser(username, text, fCMTokenList[i].toString());
+      for (int i = 0; i < fCMTokenList.length; i++) {
+        firebaseMessagingMethods.sendNotificationToUser(
+            username, text, fCMTokenList[i].toString());
       }
       log(3);
     } catch (e) {
@@ -209,16 +239,12 @@ class FirestoreMethods {
       String imageurl =
           await storageMethods.uploadImageToStorage('story', image, true);
       String storyId = Uuid().v1();
-      Story story = Story(
-          type: type,
-          storyUrl: imageurl,
-          storyId: storyId);
-      if(await checkIfDocExists('story', user.uid)){
-          await firestore.collection('story').doc(user.uid).update({
-            'stories': FieldValue.arrayUnion([story.toJson()]),
-          });
-      }
-      else{
+      Story story = Story(type: type, storyUrl: imageurl, storyId: storyId);
+      if (await checkIfDocExists('story', user.uid)) {
+        await firestore.collection('story').doc(user.uid).update({
+          'stories': FieldValue.arrayUnion([story.toJson()]),
+        });
+      } else {
         await firestore.collection('story').doc(user.uid).set({
           'username': user.username,
           'uid': user.uid,
@@ -228,6 +254,28 @@ class FirestoreMethods {
       }
     } catch (e) {
       print(e.toString());
+    }
+  }
+
+  Future<bool> handleLikeOnComment(
+      String commentId, String uid, List<dynamic> likes) async {
+    try {
+      if (likes.contains(uid)) {
+        final res =
+            await firestore.collection('comments').doc(commentId).update({
+          'likes': FieldValue.arrayRemove([uid])
+        });
+        return false;
+      } else {
+        final res =
+            await firestore.collection('comments').doc(commentId).update({
+          'likes': FieldValue.arrayUnion([uid])
+        });
+        return true;
+      }
+    } catch (e) {
+      print(e.toString());
+      throw e;
     }
   }
 }

@@ -28,8 +28,6 @@ class _PreviousChatState extends State<PreviousChat> {
             onTap: () {
               Navigator.of(context).push(MaterialPageRoute(
                   builder: (context) => MessageScreen(
-                      profileUrl: snap[index]['photoUrl'],
-                      name: snap[index]['username'],
                       uid: snap[index]['uid'])));
             },
             leading: SizedBox(
