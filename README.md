@@ -3,7 +3,7 @@
 <img src="assets/logo.png" alt="Instagram Clone Logo" width="150px">
 
 ## Video
-<Video src="assets/instagram_flutter_app.mp4" alt="Instagram App Video" width="250px">
+https://drive.google.com/file/d/1HOC4uNCC4NC2hY66a62WheUUStaAoi2k/view?usp=sharing"
 
 ## Overview
 
