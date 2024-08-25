@@ -2,6 +2,8 @@
 
 <img src="assets/logo.png" alt="Instagram Clone Logo" width="150px">
 
+## Video
+<Video src="assets/instagram_flutter_app.mp4" alt="Instagram App Video" width="250px">
 
 ## Overview
 
