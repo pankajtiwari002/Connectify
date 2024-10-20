@@ -29,7 +29,7 @@ class _StoryWidgetState extends State<StoryWidget> {
           storyItems.add(StoryItem.pageImage(
             url: story['storyUrl'],
             controller: storyController,
-            caption: '',
+            caption: Text(""),
             duration: Duration(
               milliseconds: (5 * 1000).toInt(),
             ),
@@ -96,9 +96,8 @@ class _StoryWidgetState extends State<StoryWidget> {
                   Navigator.pop(context);
                 }
               },
-              onStoryShow: (storyItem) {
+              onStoryShow: (storyItem,ind) {
                 final index = storyItems.indexOf(storyItem);
-
                 if (index > 0) {
                   setState(() {
                     date = '31 August 2023';

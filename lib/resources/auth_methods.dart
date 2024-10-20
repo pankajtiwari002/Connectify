@@ -94,6 +94,7 @@ class AuthMethod {
     } catch (e) {
       res = e.toString();
       print(res);
+      
     }
     return res;
   }

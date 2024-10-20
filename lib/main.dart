@@ -14,7 +14,7 @@ import 'widget/shimmer_effect.dart';
 
 Future<void> backgroundHandler(RemoteMessage message) async {
   	print(message.data.toString());
- 	print(message.notification!.title);
+ 	  print(message.notification!.title);
 	}
 
 void main() async{
