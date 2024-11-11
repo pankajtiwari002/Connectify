@@ -64,7 +64,7 @@ Welcome to Connectify, a dynamic social app that connects you with the world lik
 
 To get started with Connectify, follow these steps:
 
-1. Clone the repository: `git clone https://github.com/your-username/instagram-clone.git`
+1. Clone the repository: `git clone https://github.com/your-username/connectify.git`
 2. Set up Firebase authentication and messaging for your project.
 3. Customize the app to fit your branding and functionality needs.
 
