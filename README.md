@@ -1,7 +1,5 @@
 # Connectify - Your Gateway to a Connected World
 
-<img src="assets/logo.png" alt="Connectify Logo" width="150px">
-
 ## Video
 https://drive.google.com/file/d/1HOC4uNCC4NC2hY66a62WheUUStaAoi2k/view?usp=sharing"
 
