@@ -1,13 +1,13 @@
-# Instagram Clone - Your Gateway to a Connected World
+# Connectify - Your Gateway to a Connected World
 
-<img src="assets/logo.png" alt="Instagram Clone Logo" width="150px">
+<img src="assets/logo.png" alt="Connectify Logo" width="150px">
 
 ## Video
 https://drive.google.com/file/d/1HOC4uNCC4NC2hY66a62WheUUStaAoi2k/view?usp=sharing"
 
 ## Overview
 
-Welcome to Instagram Clone, a dynamic social app that connects you with the world like never before. This project brings together a wide range of features, including secure authentication, customizable profiles, engaging home feeds, captivating stories, chat functionality, and much more.
+Welcome to Connectify, a dynamic social app that connects you with the world like never before. This project brings together a wide range of features, including secure authentication, customizable profiles, engaging home feeds, captivating stories, chat functionality, and much more.
 
 ## Features
 
@@ -64,7 +64,7 @@ Welcome to Instagram Clone, a dynamic social app that connects you with the worl
 
 ## Getting Started
 
-To get started with Instagram Clone, follow these steps:
+To get started with Connectify, follow these steps:
 
 1. Clone the repository: `git clone https://github.com/your-username/instagram-clone.git`
 2. Set up Firebase authentication and messaging for your project.
